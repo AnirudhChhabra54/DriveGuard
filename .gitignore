@@ -1,0 +1,16 @@
+Driver Drowsiness Dataset (DDD)/
+dataset/
+dataset_processed/
+train_env/
+.DS_Store
+__pycache__/
+*.pyc
+Latex_Report_UPES.zip
+history.txt
+imp.txt
+errors.txt
+SRS_Document_Webapp.pdf
+presentation_guide.txt
+data_processing_guide.txt
+corrected_report.txt
+accuracy.txt
