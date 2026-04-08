@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Software Requirements Specification</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2.54cm;
+
+            @bottom-right {
+                content: counter(page);
+            }
+        }
+
+        body {
+            font-family: "Times New Roman", Times, serif;
+            font-size: 12pt;
+            line-height: 1.15;
+            text-align: justify;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            color: #000;
+            line-height: 1.15;
+        }
+
+        h1 {
+            font-size: 14pt;
+            text-transform: uppercase;
+            text-align: left;
+            margin-top: 24pt;
+            margin-bottom: 12pt;
+        }
+
+        h2 {
+            font-size: 12pt;
+            text-decoration: underline;
+            margin-top: 18pt;
+            margin-bottom: 6pt;
+            font-weight: bold;
+        }
+
+        h3 {
+            font-size: 12pt;
+            margin-top: 12pt;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: "Times New Roman", Times, serif;
+            font-size: 10pt;
+            margin-bottom: 12pt;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        .figure-caption {
+            font-family: "Times New Roman", Times, serif;
+            font-size: 11pt;
+            text-align: center;
+            font-style: italic;
+            margin-top: 6pt;
+            margin-bottom: 12pt;
+        }
+
+        .title-page {
+            text-align: center;
+            box-sizing: border-box;
+            background: #fff;
+            padding: 2cm;
+            min-height: 29.7cm;
+            /* A4 height */
+            page-break-after: always;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        ul {
+            margin-top: 0;
+            margin-bottom: 12pt;
+        }
+
+        .cover-title {
+            font-size: 18pt;
+            font-weight: bold;
+            margin-top: 5cm;
+        }
+
+        .diagram-box {
+            width: 100%;
+            height: 200px;
+            border: 1px dashed #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 12pt 0;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Cover Page -->
+    <div class="title-page">
+        <h1 class="center cover-title" style="font-size: 20pt;">Software Requirements Specification</h1>
+        <br><br><br>
+        <p style="font-size: 14pt; text-align: center;">For</p>
+        <br><br>
+        <h1 class="center" style="font-size: 16pt;">AI-Based Driver Drowsiness Detection and Emergency Alert System (Web
+            Application Phase)</h1>
+        <br><br>
+        <p style="font-size: 14pt; text-align: center;" id="current-date">January 2026</p>
+        <br><br><br><br><br><br><br><br>
+        <p style="font-size: 14pt; text-align: center;"><b>Prepared by</b></p>
+        <br>
+        <p style="font-size: 14pt; text-align: center;">Computer Science Engineering<br>SAP ID: 5000010516<br>Anirudh
+            Chhabra</p>
+        <br><br><br><br><br>
+        <p style="font-size: 14pt; text-align: center;">School of Computer Science<br>UPES<br>Dehradun - 248007</p>
+    </div>
+
+    <!-- Table of Contents -->
+    <div class="page-break">
+        <h1 class="center">Table of Contents</h1>
+        <p>Revision History
+            ................................................................................................................
+            3</p>
+        <p>1 INTRODUCTION
+            .............................................................................................................
+            4</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;1.1 Purpose of the Project
+            ............................................................................................... 4</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;1.2 Target Beneficiary
+            .................................................................................................... 4</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;1.3 Project Scope
+            ...........................................................................................................
+            4</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;1.4 References
+            ................................................................................................................
+            4</p>
+        <p>2 PROJECT DESCRIPTION
+            ................................................................................................ 5</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;2.1 Reference Algorithm
+            ................................................................................................ 5</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;2.2 Characteristic of Data
+            ............................................................................................. 5</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;2.3 SWOT Analysis
+            ........................................................................................................ 6
+        </p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;2.4 Project Features
+            ....................................................................................................... 6
+        </p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;2.5 User Classes and Characteristics
+            ............................................................................. 6</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;2.6 Design and Implementation Constraints
+            ................................................................. 7</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;2.7 Design Diagrams
+            ..................................................................................................... 7</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;2.8 Assumptions and Dependencies
+            .............................................................................. 9</p>
+        <p>3 SYSTEM REQUIREMENTS
+            ............................................................................................ 10</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;3.1 User Interface
+            ......................................................................................................... 10
+        </p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;3.2 Software Interface
+            .................................................................................................. 10</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;3.3 Database Interface
+            .................................................................................................. 10</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;3.4 Protocols
+            .................................................................................................................
+            10</p>
+        <p>4 NON-FUNCTIONAL REQUIREMENTS ........................................................................ 11</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;4.1 Performance Requirements
+            .................................................................................... 11</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;4.2 Security Requirements
+            ............................................................................................ 11</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;4.3 Software Quality Attributes
+            .................................................................................... 11</p>
+        <p>5 OTHER REQUIREMENTS
+            .............................................................................................. 12</p>
+        <p>Appendix A: Glossary
+            ......................................................................................................... 12
+        </p>
+        <p>Appendix B: Analysis Model
+            .............................................................................................. 12</p>
+        <p>Appendix C: Issues List
+            ...................................................................................................... 12
+        </p>
+        <p>PROJECT IMPLEMENTATION VERIFICATION .......................................................... 13</p>
+    </div>
+
+    <!-- Revision History -->
+    <div class="page-break">
+        <h1>Revision History</h1>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Date</th>
+                <th>Reason For Changes</th>
+                <th>Version</th>
+            </tr>
+            <tr>
+                <td>Anirudh Chhabra</td>
+                <td id="rev-date">09/03/2026</td>
+                <td>Initial Draft for Web Application Milestone</td>
+                <td>1.0</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Section 1 -->
+    <div class="page-break">
+        <h1>1 INTRODUCTION</h1>
+        <h2>1.1 Purpose of the Project</h2>
+        <p>The primary purpose of the AI-Based Driver Drowsiness Detection and Emergency Alert System is to reduce road
+            accidents caused by driver fatigue. This specific Software Requirements Specification addresses the web
+            application phase of the project, which operates entirely on-browser utilizing computer vision to detect
+            early signs of sleepiness in real time.</p>
+
+        <h2>1.2 Target Beneficiary</h2>
+        <p>The system is targeted towards commercial fleet operators, long-distance truck drivers, and everyday
+            commuters. By analyzing facial landmarks, it directly benefits the driver by preventing potential fatal
+            accidents, while also indirectly benefiting other road users.</p>
+
+        <h2>1.3 Project Scope</h2>
+        <p>The scope of this web application includes a fully client-side implementation running within modern web
+            browsers without requiring backend cloud infrastructure. It leverages a webcam feed to perform face
+            tracking, extract eye regions via MediaPipe, and compute the Eye Aspect Ratio (EAR) and PERCLOS. A
+            pre-trained custom Convolutional Neural Network (CNN) converted to TensorFlow.js acts as an active
+            validation mechanism. When a drowsy state is detected, the system triggers stage 1 audio alarms. If
+            unresolved, stage 2 initiates a simulated emergency SMS containing live GPS coordinates via browser
+            geolocation APIs.</p>
+
+        <h2>1.4 References</h2>
+        <p>Implementation methodologies reference academic literature regarding EAR algorithms, TensorFlow model
+            optimization literature (TensorFlow.js and TFLite specifications), and standard documentation for web
+            geolocation and MediaPipe face mesh configurations.</p>
+    </div>
+
+    <!-- Section 2 -->
+    <div class="page-break">
+        <h1>2 PROJECT DESCRIPTION</h1>
+
+        <h2>2.1 Reference Algorithm</h2>
+        <p>The core classification relies on a Hybrid detection method combining a CNN eye classifier, geometric Eye
+            Aspect Ratio (EAR), and PERCLOS (Percentage of Eye Closure) calculations. The driver is marked as drowsy
+            when the calculated EAR falls below a predefined threshold consistently or the PERCLOS metric exceeds the
+            threshold. The CNN acts as a secondary verification using pre-cropped eye images fed into the TensorFlow.js
+            model.</p>
+
+        <h2>2.2 Characteristic of Data</h2>
+        <p>The project utilizes the Driver Drowsiness Dataset (DDD) sourced from Kaggle. The dataset contains
+            approximately 41,000 images categorized into two principal classes: Open Eye and Closed Eye. The
+            characteristics of the data inherently include a wide array of variations designed to ensure model
+            robustness. These variations feature different lighting conditions, an assortment of driver demographics,
+            varying head poses, and the presence or absence of reflective eyewear (glasses and non-glasses drivers). The
+            dataset is accessible via the following link: [https://share.google/GpacdsuOIEdxhh2N2].</p>
+
+        <p>Prior to training, images underwent strict data preprocessing using a custom Python pipeline. This included
+            dataset cleaning, resizing images to a standard 112x112 pixel dimension, and normalizing pixel values by
+            scaling them between 0 and 1 (pixel / 255). To mitigate overfitting, dataset augmentation techniques were
+            applied extensively, including rotation, brightness variations, localized zoom, and horizontal flipping. The
+            dataset was split into Training (80%), Validation (15%), and Testing (5%) subsets.</p>
+
+        <h2>2.3 SWOT Analysis</h2>
+        <p><b>Strengths:</b> The system runs fully on-device natively in-browser, guaranteeing privacy and instantaneous
+            latency. The dual-verification method (EAR + CNN) minimizes false positives.</p>
+        <p><b>Weaknesses:</b> Webapp constraint depends strictly on browser camera capabilities, dropping performance
+            slightly on older, low-clock-speed CPUs without WebGL acceleration.</p>
+        <p><b>Opportunities:</b> Seamless transition into the final native Flutter Mobile App (End Sem product)
+            utilizing INT8 quantized TFLite models.</p>
+        <p><b>Threats:</b> Severe dynamic lighting changes (e.g., exiting a tunnel) can temporarily blind standard
+            webcams.</p>
+
+        <h2>2.4 Project Features</h2>
+        <ul>
+            <li>Real-time face detection pipeline built via Google MLKit (adapted for web via MediaPipe).</li>
+            <li>Eye tracking logic accurately pinpointing right and left ocular landmarks.</li>
+            <li>Instantaneous continuous calculations of EAR and PERCLOS values.</li>
+            <li>Two-stage Alert System (Audio alarm followed by simulated Emergency SMS).</li>
+            <li>GPS integration polling live coordinates during critical interventions.</li>
+            <li>Responsive User Interface overlay indicating metrics using TailwindCSS.</li>
+        </ul>
+
+        <h2>2.5 User Classes and Characteristics</h2>
+        <p>Users require minimal technical proficiency. The interface requires only clicking a single "Start Monitoring"
+            button and granting standard browser permissions for Camera and GPS capability. Administrators possess
+            access to the underlying script debugging variables for threshold manipulation.</p>
+
+        <h2>2.6 Design and Implementation Constraints</h2>
+        <p>The overarching constraint is that the machine learning model must operate efficiently on-browser. The
+            original Convolutional Neural Network (CNN) model format (model.h5) was transformed to run seamlessly
+            offline. To achieve this, it relies on a standardized architecture. Training Details utilized an Adam
+            Optimizer, a Sparse Categorical Crossentropy Loss Function, a Batch Size of 16, and matured over 17 Epochs
+            using Early Stopping protocols. The model accomplished a Training Accuracy of ~99.97% and Testing Accuracy
+            of ~99.86%.</p>
+
+        <h2>2.7 Design Diagrams</h2>
+        <p>The following structural and behavioral diagrams define the design blueprint of the system.</p>
+
+        <div class="diagram-box">[ Use Case Diagram Placeholder ]</div>
+        <p class="figure-caption">Figure 1: Use Case Diagram outlining the interaction between the Driver, Camera feed,
+            and the Alert Management System.</p>
+
+        <div class="diagram-box">[ Class Diagram Placeholder ]</div>
+        <p class="figure-caption">Figure 2: Class Diagram illustrating the core components: FaceDetector,
+            DrowsinessLogic, and AlertNotifier.</p>
+
+        <div class="diagram-box">[ Activity Diagram Placeholder ]</div>
+        <p class="figure-caption">Figure 3: Activity Diagram modeling the step-by-step frame processing workflow.</p>
+
+        <div class="diagram-box">[ Sequence Diagram Placeholder ]</div>
+        <p class="figure-caption">Figure 4: Sequence Diagram detailing the chronological messages passed during an
+            emergency SMS generation event.</p>
+
+        <div class="diagram-box">[ Data Flow Diagram Placeholder ]</div>
+        <p class="figure-caption">Figure 5: Data Flow Diagram (Level 0 and 1) showing the lifecycle of video frame data
+            being processed into categorical drowsiness states.</p>
+
+        <div class="diagram-box">[ State Diagram Placeholder ]</div>
+        <p class="figure-caption">Figure 6: State Diagram capturing the transition of the driver from 'Active' to
+            'Fatigued' and finally 'Dormant'.</p>
+
+        <div class="diagram-box">[ Collaboration Diagram Placeholder ]</div>
+        <p class="figure-caption">Figure 7: Collaboration Diagram linking the UI layer, calculation layer, and hardware
+            abstraction layer.</p>
+
+        <div class="diagram-box">[ Deployment Diagram Placeholder ]</div>
+        <p class="figure-caption">Figure 8: Deployment Diagram specifying the client-side browser architecture with zero
+            remote server dependencies.</p>
+
+        <h2>2.8 Assumptions and Dependencies</h2>
+        <p>It is assumed the user device contains an upward-facing or front-facing camera with at least 480p resolution.
+            Dependencies include a modern web browser capable of rendering WebGL and executing synchronous JavaScript
+            streams. The application relies entirely on JavaScript module CDNs for MediaPipe Face Mesh and TensorFlow.js
+            operations.</p>
+    </div>
+
+    <!-- Section 3 -->
+    <div class="page-break">
+        <h1>3 SYSTEM REQUIREMENTS</h1>
+
+        <h2>3.1 User Interface</h2>
+        <p>The Web Application interface uses HTML5, structured by vanilla CSS and TailwindCSS utilities, showcasing a
+            dark-themed UI system ("glassmorphism"). It exhibits the live camera feed bounded by a facial landmark
+            overlay. Real-time metrics presented encompass the EAR value, PERCLOS percentage, and the CNN prediction
+            status. A distinct HUD overlay actively indicates driver alertness states ("AWAKE & ACTIVE", "DROWSY -
+            WARNING", "CRITICAL ALERT").</p>
+
+        <h2>3.2 Software Interface</h2>
+        <p>Integration hinges on MediaPipe's Face Mesh APIs returning multi-face un-normalized landmark coordinates.
+            TensorFlow.js is utilized for neural net verification. The location functionality queries the browser’s
+            integrated navigator.geolocation API directly.</p>
+
+        <h2>3.3 Database Interface</h2>
+        <p>As an entirely stateless on-device web application, it maintains no persistent external database bindings in
+            this current milestone. Metric histories are governed via short-lived volatile arrays persisting only for
+            the lifecycle of the PERCLOS window memory.</p>
+
+        <h2>3.4 Protocols</h2>
+        <p>No external backend communication protocols (HTTP/REST) are leveraged, securing the pipeline dynamically over
+            local streams. Local HTTPS certificates are nominally presumed during deployment for granting web-camera
+            capabilities as standard browser policy dictates.</p>
+    </div>
+
+    <!-- Section 4 -->
+    <div class="page-break">
+        <h1>4 NON-FUNCTIONAL REQUIREMENTS</h1>
+
+        <h2>4.1 Performance Requirements</h2>
+        <p>The system is strictly expected to compute frames at a minimum of 20 FPS (Frames Per Second) on moderately
+            powered machines to guarantee that micro-sleep instances are accurately caught within the PERCLOS
+            mathematical window limitations. Processing delays extending beyond 50 milliseconds per frame yield tracking
+            desynchronization.</p>
+
+        <h2>4.2 Security Requirements</h2>
+        <p>Processing must be executed natively on-browser mitigating latency and protecting strict user privacy
+            policies. Facial streams must not be compressed, transmitted, nor saved externally at any junction.</p>
+
+        <h2>4.3 Software Quality Attributes</h2>
+        <p>The application manifests high availability and fault tolerance. In instances where the visual input ceases
+            or faces are untraceable, a "NO FACE DETECTED" safety net halts false positive aggregations instantly.
+            Scalability translates effortlessly as a precursor to the upcoming natively coded Flutter iteration.</p>
+    </div>
+
+    <!-- Section 5 -->
+    <div class="page-break">
+        <h1>5 OTHER REQUIREMENTS</h1>
+        <p>Hardware compatibility considerations ensure readiness for IoT transitions. While directly catering to
+            widespread mobile clients in its future Android capacity, the underlying computational paradigms are curated
+            to remain lightweight, ensuring they natively facilitate forthcoming Edge deployments, notably porting to a
+            Raspberry Pi structure substituting typical speaker sets with physical buzzer circuitry.</p>
+
+        <h1>Appendix A: Glossary</h1>
+        <p><b>CNN:</b> Convolutional Neural Network. A sequence of deep learning algorithms specialized for image
+            recognition.</p>
+        <p><b>EAR:</b> Eye Aspect Ratio. A quantifiable scaler value determining the physical openness of an eyelid
+            utilizing specific distance vectors between facial landmarks.</p>
+        <p><b>PERCLOS:</b> Percentage of Eye Closure over a rolling time window.</p>
+
+        <h1>Appendix B: Analysis Model</h1>
+        <p>The analysis predominantly surrounds a Confusion Matrix evaluated during model construction yielding values:
+            [[1116, 2], [1, 972]], cementing an exceptionally low Type I and Type II error rate.</p>
+
+        <h1>Appendix C: Issues List</h1>
+        <p>Current development constraints occasionally witness slight EAR threshold inaccuracies dependent entirely on
+            excessive glare traversing prescription eyeglasses. This edge case informs upcoming threshold calibrations.
+        </p>
+    </div>
+
+    <!-- Section Verification -->
+    <div>
+        <h1>PROJECT IMPLEMENTATION VERIFICATION</h1>
+        <p>In adherence to stringent academic and functional validation protocols, the developers of this framework must
+            explicitly verify whether the preceding methodologies were implemented accurately as detailed throughout
+            this SRS document.</p>
+        <p>Checklist of strict verification includes:</p>
+        <ul>
+            <li>Dataset preprocessing and normalization mechanics executing appropriately on DDD.</li>
+            <li>CNN architecture layout mapped accurately using strictly documented parameters.</li>
+            <li>Training hyperparameters utilizing the Adam optimizer and Sparse Categorical Crossentropy over 17 epochs
+                limit.</li>
+            <li>Implementation readiness of the TensorFlow models (specifically regarding the upcoming TensorFlow Lite
+                INT8 Quantization strategy engineered to shrink weight sizes to an estimated 1.17 MB for Raspberry Pi
+                and Flutter integration).</li>
+            <li>Web-App deployment logic transitioning smoothly to the projected Flutter app architecture.</li>
+            <li>MLKit underlying strategies adapted securely to web equivalents for tracking right and left eye
+                coordinations.</li>
+            <li>Execution of consecutive bounding rules triggering the EAR scalar matrix and PERCLOS boolean arrays
+                accurately.</li>
+        </ul>
+        <p>Should any substantive architectural or logistical differences manifest themselves diverging from these
+            stated rules, the developers are strictly instructed to document and explain those deviations alongside
+            their academic advisor accordingly.</p>
+    </div>
+
+    <script>
+        const date = new Date();
+        const formattedDate = date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        document.getElementById('current-date').innerText = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        document.getElementById('rev-date').innerText = formattedDate;
+    </script>
+</body>
+
+</html>
