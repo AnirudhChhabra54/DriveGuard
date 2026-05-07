@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Safety AI Platform</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: white;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* 
+         * SPA Navigation & Transitions
+         */
+        #app-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .page-view {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease-in-out, transform 0.6s cubic-bezier(0.8, 0, 0.2, 1);
+            transform: translateX(100px);
+            /* Start slightly to the right */
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .page-view.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+            z-index: 10;
+        }
+
+        /* Glassmorphic Global Nav Bar */
+        #global-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 70px;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 3rem;
+        }
+
+        .nav-brand {
+            font-weight: 900;
+            font-size: 1.25rem;
+            letter-spacing: 0.05em;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            padding: 0.5rem 0;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: white;
+        }
+
+        .nav-link.active {
+            color: #38bdf8;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #38bdf8;
+            box-shadow: 0 0 10px #38bdf8;
+            border-radius: 2px;
+        }
+
+        /* Padding so pages don't get hidden behind the nav */
+        .page-content {
+            padding-top: 100px;
+            padding-bottom: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+
+        /* 
+         * Live Monitor Specifics
+         */
+        #video-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #webcam {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+            transform: scaleX(-1);
+        }
+
+        #output_canvas {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 2;
+            transform: scaleX(-1);
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: absolute;
+            z-index: 10;
+            border-radius: 1rem;
+            padding: 1.5rem;
+        }
+
+        #status-banner {
+            top: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        #analytics-panel {
+            bottom: 2rem;
+            left: 2rem;
+            min-width: 300px;
+        }
+
+        #controls-panel {
+            bottom: 2rem;
+            right: 2rem;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            color: #94a3b8;
+            font-size: 0.875rem;
+        }
+
+        .metric-value {
+            font-weight: bold;
+            font-family: monospace;
+            font-size: 1.125rem;
+        }
+
+        .pulse-red {
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 20px rgba(239, 68, 68, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+
+        /* 
+         * Dashboard Specifics 
+         */
+        #three-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: -1;
+            /* Render behind everything */
+        }
+
+        .dashboard-ui {
+            width: 100%;
+            height: calc(100vh - 100px);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-content: center;
+        }
+
+        /* Helpers */
+        .text-gradient {
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-image: linear-gradient(90deg, #38bdf8, #818cf8);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- GLOBAL NAVIGATION -->
+    <nav id="global-nav">
+        <div class="nav-brand">
+            <svg class="w-6 h-6 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                </path>
+            </svg>
+            DriverDrow AI
+        </div>
+        <div class="nav-links">
+            <div class="nav-link active" onclick="navigateTo('home')">Home</div>
+            <div class="nav-link" onclick="navigateTo('monitor')">Live Monitor</div>
+            <div class="nav-link" onclick="navigateTo('dashboard')">Analytics Dashboard</div>
+            <div class="nav-link" onclick="navigateTo('about')">About the Tech</div>
+        </div>
+    </nav>
+
+    <!-- SPA CONTAINER -->
+    <div id="app-container">
+
+        <!-- PAGE: HOME -->
+        <section id="page-home" class="page-view active">
+            <div class="page-content flex flex-col items-center justify-center text-center" style="min-height: 80vh;">
+                <div class="inline-block p-4 rounded-full bg-sky-500/10 mb-6 border border-sky-500/20">
+                    <svg class="w-16 h-16 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                        </path>
+                    </svg>
+                </div>
+                <h1 class="text-6xl font-black tracking-tight mb-6">
+                    Next-Gen <span class="text-gradient">Driver Monitoring</span>.
+                </h1>
+                <p class="text-xl text-slate-400 max-w-2xl mb-12 leading-relaxed">
+                    Utilizing state-of-the-art WebGL, TensorFlow, and MediaPipe to track eye-aspect ratios flawlessly in
+                    real-time, instantly detecting signs of drowsiness to save lives.
+                </p>
+                <div class="flex gap-4">
+                    <button onclick="startMonitoringSession()"
+                        class="bg-sky-500 hover:bg-sky-400 text-slate-900 font-bold py-4 px-8 rounded-full shadow-[0_0_20px_rgba(56,189,248,0.4)] transition-all transform hover:scale-105">
+                        START MONITORING →
+                    </button>
+                    <button onclick="navigateTo('about')"
+                        class="bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 px-8 rounded-full border border-slate-600 transition-all">
+                        How it Works
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-3 gap-8 mt-24 w-full max-w-4xl text-left">
+                    <div class="p-6 bg-slate-800/50 rounded-2xl border border-slate-700/50">
+                        <h3 class="text-sky-400 font-bold mb-2">Browser-Native</h3>
+                        <p class="text-slate-400 text-sm">Runs entirely in JS. No data is sent to external servers,
+                            protecting your privacy.</p>
+                    </div>
+                    <div class="p-6 bg-slate-800/50 rounded-2xl border border-slate-700/50">
+                        <h3 class="text-indigo-400 font-bold mb-2">PERCLOS Threshold</h3>
+                        <p class="text-slate-400 text-sm">Tracks the percentage of eyelid closure over time for superior
+                            accuracy.</p>
+                    </div>
+                    <div class="p-6 bg-slate-800/50 rounded-2xl border border-slate-700/50">
+                        <h3 class="text-purple-400 font-bold mb-2">3D Analytics</h3>
+                        <p class="text-slate-400 text-sm">Translates your drive telemetry into an intuitive Safe Driving
+                            score dashboard.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE: LIVE MONITOR -->
+        <section id="page-monitor" class="page-view">
+            <div id="video-container">
+                <video id="webcam" playsinline></video>
+                <canvas id="output_canvas"></canvas>
+
+                <!-- Status Banner -->
+                <div id="status-banner" class="glass-panel" style="display: none;">
+                    <div id="status-icon" class="w-12 h-12 rounded-full bg-slate-500 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xs uppercase tracking-wider text-slate-400 font-bold">Driver Status</h1>
+                        <p id="status-text" class="text-2xl font-black tracking-widest text-slate-300">INITIALIZING...
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Analytics Board -->
+                <div id="analytics-panel" class="glass-panel" style="display: none;">
+                    <h2 class="text-lg font-bold mb-4 text-white flex items-center gap-2">
+                        <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                            </path>
+                        </svg>
+                        Live AI Telemetry
+                    </h2>
+
+                    <div class="metric-row">
+                        <span class="metric-label">Avg Eye Aspect Ratio (EAR)</span>
+                        <span class="metric-value text-blue-300" id="val-ear">0.00</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Consecutive Frames Closed</span>
+                        <span class="metric-value text-orange-400" id="val-frames">0</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">PERCLOS (Threshold 70%)</span>
+                        <span class="metric-value text-orange-400" id="val-perclos">0.0%</span>
+                    </div>
+                    <!-- Removed mock CNN output row to avoid confusion -->
+                </div>
+
+                <!-- Controls -->
+                <div id="controls-panel" class="glass-panel" style="display: none;">
+                    <button id="btn-test-alert"
+                        class="bg-rose-600 hover:bg-rose-500 text-white font-bold py-3 px-4 rounded w-48 mb-4 shadow-[0_0_15px_rgba(225,29,72,0.4)]">
+                        Simulate Emergency
+                    </button>
+                    <div class="pt-4 border-t border-slate-700">
+                        <p class="text-xs text-slate-400 mb-1">FPS Counter</p>
+                        <p id="val-fps" class="text-xl font-mono font-bold text-white">0.0</p>
+                    </div>
+                </div>
+
+                <!-- Big centered start button before camera is ready -->
+                <button id="btn-start"
+                    class="absolute z-50 bg-sky-500 hover:bg-sky-400 text-slate-900 font-bold py-4 px-8 rounded-full shadow-[0_0_20px_rgba(56,189,248,0.4)] transition-all transform hover:scale-105">
+                    Enable Camera Access
+                </button>
+            </div>
+        </section>
+
+        <!-- PAGE: AI DASHBOARD -->
+        <section id="page-dashboard" class="page-view">
+            <div class="page-content">
+                <div class="dashboard-ui">
+                    <!-- Left Column: Score & Core Info -->
+                    <div class="glass-panel"
+                        style="position: relative; height: fit-content; display: flex; flex-direction: column; align-items: center; background: rgba(15, 23, 42, 0.4);">
+                        <h2 class="text-2xl font-bold mb-2 text-white">Safe Driving Score</h2>
+                        <div class="relative flex items-center justify-center w-48 h-48 my-6">
+                            <!-- GLOBE 3D CANVAS RENDERED BEHIND THIS -->
+                            <p class="text-7xl font-black text-white" id="dash-score"
+                                style="text-shadow: 0 0 30px #06b6d4;">-</p>
+                            <p class="absolute bottom-4 text-xs text-cyan-400 font-bold uppercase tracking-widest">/ 100
+                            </p>
+                        </div>
+                        <div class="w-full bg-sky-900/30 p-5 rounded-xl border border-sky-500/20 shadow-inner">
+                            <p
+                                class="text-xs text-sky-200 mb-2 uppercase tracking-wider font-extrabold flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                                AI Inference Tip
+                            </p>
+                            <p class="text-lg text-white font-medium leading-relaxed" id="dash-tip">Not enough data to
+                                calculate style.</p>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Stats Grid -->
+                    <div class="flex flex-col gap-6" style="height: fit-content;">
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="glass-panel"
+                                style="position: relative; padding: 1.5rem; background: rgba(15, 23, 42, 0.4);">
+                                <p class="text-xs text-slate-400 mb-2 uppercase tracking-wider font-bold">Total Tracking
+                                    Duration</p>
+                                <p class="text-4xl font-black text-blue-400 font-mono" id="dash-weekly">0h 0m</p>
+                            </div>
+                            <div class="glass-panel"
+                                style="position: relative; padding: 1.5rem; background: rgba(15, 23, 42, 0.4);">
+                                <p class="text-xs text-slate-400 mb-2 uppercase tracking-wider font-bold">Calculated
+                                    Driving Style</p>
+                                <p class="text-3xl font-black text-emerald-400 uppercase tracking-widest mt-1"
+                                    id="dash-style" style="text-shadow: 0 0 15px rgba(52, 211, 153, 0.4);">---</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="glass-panel"
+                                style="position: relative; padding: 1.5rem; border-color: rgba(249, 115, 22, 0.2); background: rgba(15, 23, 42, 0.4);">
+                                <p class="text-xs text-orange-200 mb-2 uppercase tracking-wider font-bold">Critical
+                                    Alerts Ignored</p>
+                                <p class="text-4xl font-black text-orange-400" id="dash-accidents">0</p>
+                            </div>
+                            <div class="glass-panel"
+                                style="position: relative; padding: 1.5rem; border-color: rgba(168, 85, 247, 0.2); background: rgba(15, 23, 42, 0.4);">
+                                <p class="text-xs text-purple-200 mb-2 uppercase tracking-wider font-bold">Fatigue /
+                                    Sleep Incidents</p>
+                                <p class="text-4xl font-black text-purple-400" id="dash-asleep">0</p>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel"
+                            style="position: relative; padding: 1.5rem; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05);">
+                            <div class="flex items-center gap-4">
+                                <div
+                                    class="w-12 h-12 rounded-full bg-red-500/20 flex flex-shrink-0 items-center justify-center">
+                                    <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-red-300 uppercase tracking-wider font-bold mb-1">Recommended
+                                        Rest Window</p>
+                                    <p class="text-2xl font-black text-red-400" id="dash-window">Night Time</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE: ABOUT -->
+        <section id="page-about" class="page-view">
+            <div class="page-content max-w-3xl">
+                <h1 class="text-4xl font-black mb-8">How The Technology Works</h1>
+
+                <div class="bg-slate-800/50 rounded-2xl p-8 mb-8 border border-slate-700">
+                    <h2 class="text-2xl font-bold text-sky-400 mb-4 flex items-center gap-3">
+                        <span
+                            class="flex items-center justify-center w-8 h-8 rounded-md bg-sky-500/20 text-sky-400 text-sm">1</span>
+                        Ear Aspect Ratio (EAR)
+                    </h2>
+                    <p class="leading-relaxed text-slate-300 mb-4">
+                        The foundation of the detection relies on <strong>MediaPipe's WebGL-accelerated
+                            FaceMesh</strong>. This neural network identifies 468 precise landmarks across your face at
+                        30+ frames per second directly inside your browser.
+                    </p>
+                    <p class="leading-relaxed text-slate-300">
+                        We extract 6 specific landmarks surrounding each eye and calculate the Euclidean distance
+                        between the horizontal and vertical bounds to create the EAR fraction. If the ratio drops
+                        beneath <code>0.25</code>, the system flags the eye as "closed" for that frame.
+                    </p>
+                </div>
+
+                <div class="bg-slate-800/50 rounded-2xl p-8 mb-8 border border-slate-700">
+                    <h2 class="text-2xl font-bold text-orange-400 mb-4 flex items-center gap-3">
+                        <span
+                            class="flex items-center justify-center w-8 h-8 rounded-md bg-orange-500/20 text-orange-400 text-sm">2</span>
+                        The PERCLOS Algorithm
+                    </h2>
+                    <p class="leading-relaxed text-slate-300 mb-4">
+                        Closing your eyes to blink is normal. To prevent false alarms, we track an array of the last 30
+                        frames and calculate the <strong>Percentage of Eye Closure (PERCLOS)</strong>.
+                    </p>
+                    <p class="leading-relaxed text-slate-300">
+                        If more than 70% of the frames within the rolling window are flagged as closed, the state
+                        machine triggers a <code>DROWSY</code> alarm. If the eyes stay shut continuously for over 60
+                        straight frames, a <code>CRITICAL FATIGUE</code> state is instantly reached.
+                    </p>
+                </div>
+
+                <div class="bg-slate-800/50 rounded-2xl p-8 mb-8 border border-slate-700">
+                    <h2 class="text-2xl font-bold text-purple-400 mb-4 flex items-center gap-3">
+                        <span
+                            class="flex items-center justify-center w-8 h-8 rounded-md bg-purple-500/20 text-purple-400 text-sm">3</span>
+                        Machine Learning Style Inference
+                    </h2>
+                    <p class="leading-relaxed text-slate-300 mb-4">
+                        The Dashboard consumes these real-time alarm incidents to generate a long-term Safe Driving
+                        Score.
+                    </p>
+                    <ul class="list-disc list-inside text-slate-300 space-y-2 ml-2">
+                        <li>If alarms trigger frequently over a short duration, the style shifts to
+                            <strong>Drowsy</strong>.
+                        </li>
+                        <li>If critical alarms play endlessly without the user reacting or pulling over, it shifts to
+                            <strong>Aggressive/Risky</strong>.
+                        </li>
+                        <li>The system correlates tracking time with fatigue ratios to offer proactive resting advice.
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </section>
+
+    </div> <!-- End SPA Container -->
+
+    <!-- Persistent Three Canvas -->
+    <canvas id="three-canvas"></canvas>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script src="dashboard.js?v=202405"></script>
+    <script src="app.js?v=202405"></script>
+
+    <!-- SPA Router Logic -->
+    <script>
+        let currentNav = 'home';
+
+        function navigateTo(pageId) {
+            // Update nav styling
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+            document.querySelector(`.nav-link[onclick="navigateTo('${pageId}')"]`).classList.add('active');
+
+            // Execute exit transitions
+            document.querySelectorAll('.page-view').forEach(el => {
+                el.classList.remove('active');
+                // Slight delay so the old page fades out before sliding the new one in completely
+                setTimeout(() => {
+                    if (!el.classList.contains('active')) {
+                        el.style.display = 'none';
+                    }
+                }, 500);
+            });
+
+            // Execute enter transitions for the selected page
+            const targetPage = document.getElementById(`page-${pageId}`);
+            targetPage.style.display = 'block';
+
+            // Timeout ensures display:block applies before CSS transition triggers
+            setTimeout(() => {
+                targetPage.classList.add('active');
+            }, 50);
+
+            // Notify Three.js controller
+            if (typeof setDashboardActive === 'function') {
+                setDashboardActive(pageId === 'dashboard');
+            }
+
+            // Prompt tracking UI if switching to monitor for the first time
+            if (pageId === 'monitor' && window.cameraActive) {
+                document.getElementById('status-banner').style.display = 'flex';
+                document.getElementById('analytics-panel').style.display = 'block';
+                document.getElementById('controls-panel').style.display = 'block';
+            }
+
+            currentNav = pageId;
+        }
+
+        function startMonitoringSession() {
+            navigateTo('monitor');
+            // Simulate a click on the actual camera start loop inside app.js 
+            // if it hasn't been clicked yet
+            const btnStart = document.getElementById('btn-start');
+            if (btnStart.style.display !== 'none') {
+                btnStart.click();
+            }
+        }
+    </script>
+
+</body>
+
+</html>
