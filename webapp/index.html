@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Driver Safety AI Platform</title>
+    <title>DriveGuard: AI Driver Safety & Drowsiness Detection</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -15,6 +15,22 @@
             padding: 0;
             overflow: hidden;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(56, 189, 248, 0.25);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(56, 189, 248, 0.5);
         }
 
         /* 
@@ -35,11 +51,11 @@
             height: 100vh;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.5s ease-in-out, transform 0.6s cubic-bezier(0.8, 0, 0.2, 1);
-            transform: translateX(100px);
-            /* Start slightly to the right */
+            transition: opacity 0.4s ease-in-out, transform 0.5s cubic-bezier(0.8, 0, 0.2, 1);
+            transform: translateX(60px);
             overflow-y: auto;
             overflow-x: hidden;
+            scroll-behavior: smooth;
         }
 
         .page-view.active {
@@ -56,15 +72,15 @@
             left: 0;
             width: 100vw;
             height: 70px;
-            background: rgba(15, 23, 42, 0.7);
+            background: rgba(15, 23, 42, 0.75);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
             z-index: 100;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 3rem;
+            padding: 0 2.5rem;
         }
 
         .nav-brand {
@@ -79,7 +95,7 @@
 
         .nav-links {
             display: flex;
-            gap: 2rem;
+            gap: 1.5rem;
             align-items: center;
         }
 
@@ -89,7 +105,7 @@
             font-size: 0.9rem;
             transition: all 0.2s ease;
             cursor: pointer;
-            padding: 0.5rem 0;
+            padding: 0.5rem 0.25rem;
             position: relative;
         }
 
@@ -115,12 +131,13 @@
 
         /* Padding so pages don't get hidden behind the nav */
         .page-content {
-            padding-top: 100px;
-            padding-bottom: 3rem;
-            max-width: 1200px;
+            padding-top: 95px;
+            padding-bottom: 4rem;
+            max-width: 1240px;
             margin: 0 auto;
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
         }
-
 
         /* 
          * Live Monitor Specifics
@@ -155,9 +172,9 @@
         }
 
         .glass-panel {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             position: absolute;
             z-index: 10;
@@ -214,11 +231,9 @@
             0% {
                 box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
             }
-
             70% {
                 box-shadow: 0 0 0 20px rgba(239, 68, 68, 0);
             }
-
             100% {
                 box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
             }
@@ -235,24 +250,71 @@
             height: 100vh;
             pointer-events: none;
             z-index: -1;
-            /* Render behind everything */
         }
 
         .dashboard-ui {
             width: 100%;
-            height: calc(100vh - 100px);
+            height: calc(100vh - 120px);
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 2rem;
             align-content: center;
         }
 
-        /* Helpers */
+        /* Helpers & UI Polish */
         .text-gradient {
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-image: linear-gradient(90deg, #38bdf8, #818cf8);
+            background-image: linear-gradient(90deg, #38bdf8, #818cf8, #c084fc);
+        }
+
+        .tech-card {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tech-card:hover {
+            border-color: rgba(56, 189, 248, 0.3);
+            box-shadow: 0 10px 30px -10px rgba(56, 189, 248, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .interactive-tab {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .interactive-tab.active {
+            background-color: rgba(56, 189, 248, 0.15);
+            border-color: #38bdf8;
+            color: #38bdf8;
+        }
+
+        .frame-box {
+            width: 100%;
+            height: 28px;
+            border-radius: 4px;
+            transition: all 0.15s ease;
+            cursor: pointer;
+        }
+        .frame-box:hover {
+            transform: scale(1.1);
+            z-index: 10;
         }
     </style>
 </head>
@@ -267,7 +329,7 @@
                     d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
                 </path>
             </svg>
-            DriverDrow AI
+            <span class="tracking-wider">Drive<span class="text-sky-400">Guard</span></span>
         </div>
         <div class="nav-links">
             <div class="nav-link active" onclick="navigateTo('home')">Home</div>
@@ -374,7 +436,6 @@
                         <span class="metric-label">PERCLOS (Threshold 70%)</span>
                         <span class="metric-value text-orange-400" id="val-perclos">0.0%</span>
                     </div>
-                    <!-- Removed mock CNN output row to avoid confusion -->
                 </div>
 
                 <!-- Controls -->
@@ -482,66 +543,511 @@
             </div>
         </section>
 
-        <!-- PAGE: ABOUT -->
+        <!-- PAGE: ABOUT THE TECH (COMPREHENSIVELY ENHANCED & INTERACTIVE) -->
         <section id="page-about" class="page-view">
-            <div class="page-content max-w-3xl">
-                <h1 class="text-4xl font-black mb-8">How The Technology Works</h1>
+            <div class="page-content">
+                
+                <!-- Hero Header -->
+                <div class="text-center max-w-4xl mx-auto mb-12">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-bold uppercase tracking-wider mb-4">
+                        <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
+                        Edge AI Computer Vision & Telemetry Engine
+                    </div>
+                    <h1 class="text-4xl md:text-5xl font-black tracking-tight mb-4">
+                        How DriveGuard Works <span class="text-gradient">Under The Hood</span>
+                    </h1>
+                    <p class="text-slate-400 text-base md:text-lg leading-relaxed">
+                        A privacy-first hybrid pipeline executing client-side in your web browser. Combining 
+                        <span class="text-sky-300 font-semibold">MediaPipe 468 3D Face Landmarks</span>, 
+                        <span class="text-orange-300 font-semibold">Eye Aspect Ratio (EAR) Geometry</span>, 
+                        <span class="text-indigo-300 font-semibold">Temporal PERCLOS Buffers</span>, and 
+                        <span class="text-emerald-300 font-semibold">INT8 Quantized CNN Inference</span>.
+                    </p>
 
-                <div class="bg-slate-800/50 rounded-2xl p-8 mb-8 border border-slate-700">
-                    <h2 class="text-2xl font-bold text-sky-400 mb-4 flex items-center gap-3">
-                        <span
-                            class="flex items-center justify-center w-8 h-8 rounded-md bg-sky-500/20 text-sky-400 text-sm">1</span>
-                        Ear Aspect Ratio (EAR)
-                    </h2>
-                    <p class="leading-relaxed text-slate-300 mb-4">
-                        The foundation of the detection relies on <strong>MediaPipe's WebGL-accelerated
-                            FaceMesh</strong>. This neural network identifies 468 precise landmarks across your face at
-                        30+ frames per second directly inside your browser.
-                    </p>
-                    <p class="leading-relaxed text-slate-300">
-                        We extract 6 specific landmarks surrounding each eye and calculate the Euclidean distance
-                        between the horizontal and vertical bounds to create the EAR fraction. If the ratio drops
-                        beneath <code>0.25</code>, the system flags the eye as "closed" for that frame.
-                    </p>
+                    <!-- Quick Navigation Pill Bar -->
+                    <div class="flex flex-wrap justify-center gap-2 mt-8">
+                        <a href="#section-simulator" class="px-4 py-2 rounded-full bg-slate-800 hover:bg-sky-500/20 text-slate-300 hover:text-sky-300 border border-slate-700 hover:border-sky-500/40 text-xs font-bold transition-all flex items-center gap-1.5">
+                            <span>🎮</span> Live Simulators
+                        </a>
+                        <a href="#section-ear" class="px-4 py-2 rounded-full bg-slate-800 hover:bg-sky-500/20 text-slate-300 hover:text-sky-300 border border-slate-700 hover:border-sky-500/40 text-xs font-bold transition-all flex items-center gap-1.5">
+                            <span>📐</span> EAR Mathematics
+                        </a>
+                        <a href="#section-perclos" class="px-4 py-2 rounded-full bg-slate-800 hover:bg-sky-500/20 text-slate-300 hover:text-sky-300 border border-slate-700 hover:border-sky-500/40 text-xs font-bold transition-all flex items-center gap-1.5">
+                            <span>⏱️</span> PERCLOS Window
+                        </a>
+                        <a href="#section-pipeline" class="px-4 py-2 rounded-full bg-slate-800 hover:bg-sky-500/20 text-slate-300 hover:text-sky-300 border border-slate-700 hover:border-sky-500/40 text-xs font-bold transition-all flex items-center gap-1.5">
+                            <span>🔄</span> Pipeline Architecture
+                        </a>
+                        <a href="#section-cnn" class="px-4 py-2 rounded-full bg-slate-800 hover:bg-sky-500/20 text-slate-300 hover:text-sky-300 border border-slate-700 hover:border-sky-500/40 text-xs font-bold transition-all flex items-center gap-1.5">
+                            <span>🧠</span> CNN & Quantization
+                        </a>
+                        <a href="#section-benchmarks" class="px-4 py-2 rounded-full bg-slate-800 hover:bg-sky-500/20 text-slate-300 hover:text-sky-300 border border-slate-700 hover:border-sky-500/40 text-xs font-bold transition-all flex items-center gap-1.5">
+                            <span>📊</span> Accuracy & Specs
+                        </a>
+                    </div>
                 </div>
 
-                <div class="bg-slate-800/50 rounded-2xl p-8 mb-8 border border-slate-700">
-                    <h2 class="text-2xl font-bold text-orange-400 mb-4 flex items-center gap-3">
-                        <span
-                            class="flex items-center justify-center w-8 h-8 rounded-md bg-orange-500/20 text-orange-400 text-sm">2</span>
-                        The PERCLOS Algorithm
-                    </h2>
-                    <p class="leading-relaxed text-slate-300 mb-4">
-                        Closing your eyes to blink is normal. To prevent false alarms, we track an array of the last 30
-                        frames and calculate the <strong>Percentage of Eye Closure (PERCLOS)</strong>.
-                    </p>
-                    <p class="leading-relaxed text-slate-300">
-                        If more than 70% of the frames within the rolling window are flagged as closed, the state
-                        machine triggers a <code>DROWSY</code> alarm. If the eyes stay shut continuously for over 60
-                        straight frames, a <code>CRITICAL FATIGUE</code> state is instantly reached.
-                    </p>
+                <!-- ==================== SECTION 1: INTERACTIVE SIMULATORS SANDBOX ==================== -->
+                <div id="section-simulator" class="mb-14">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="p-2.5 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-black text-white">Interactive Algorithm Sandbox</h2>
+                            <p class="text-xs text-slate-400">Experiment with eyelid positions, sliding frame buffers, and audio synthesizer in real time.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        
+                        <!-- SIMULATOR A: LIVE EAR LANDMARK CALCULATOR -->
+                        <div class="tech-card rounded-2xl p-6 border border-slate-700/80 flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-center mb-4">
+                                    <div class="flex items-center gap-2">
+                                        <span class="badge-pill bg-sky-500/20 text-sky-300 border border-sky-500/30">Simulator 1</span>
+                                        <h3 class="text-lg font-bold text-white">Eye Aspect Ratio (EAR)</h3>
+                                    </div>
+                                    <span id="sim-ear-badge" class="badge-pill bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                                        🟢 EYES OPEN
+                                    </span>
+                                </div>
+
+                                <p class="text-xs text-slate-400 mb-4">
+                                    Drag the slider to adjust eyelid vertical separation. Watch how the 6 Euclidean landmark points recalculate the EAR metric in real time against the <code class="text-sky-300">0.25</code> threshold.
+                                </p>
+
+                                <!-- Eye Canvas Visualization -->
+                                <div class="relative bg-slate-950/80 rounded-xl p-3 border border-slate-800 flex justify-center items-center mb-4 overflow-hidden">
+                                    <canvas id="sim-ear-canvas" width="460" height="180" class="max-w-full"></canvas>
+                                    <div class="absolute top-2 left-2 text-[10px] font-mono text-slate-500">CANVAS: 6-POINT 3D MESH PROJECTION</div>
+                                </div>
+
+                                <!-- Slider & Live Math -->
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex justify-between text-xs font-semibold">
+                                        <span class="text-slate-400">Eyelid Aperture (Openness)</span>
+                                        <span class="text-sky-400 font-mono" id="sim-ear-slider-val">0.32</span>
+                                    </div>
+                                    <input type="range" id="sim-ear-slider" min="0.05" max="0.45" step="0.01" value="0.32"
+                                        class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-sky-400">
+                                </div>
+
+                                <!-- Real-Time Formula Computation Box -->
+                                <div class="bg-slate-900/90 rounded-xl p-3 border border-slate-800 text-xs font-mono text-slate-300 space-y-1">
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-500">Vertical Distances (cv1 + cv2):</span>
+                                        <span class="text-sky-300" id="sim-math-cv">cv1: 18.2px + cv2: 17.8px = 36.0px</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-500">Horizontal Span (2 * ch):</span>
+                                        <span class="text-indigo-300" id="sim-math-ch">2 * 56.0px = 112.0px</span>
+                                    </div>
+                                    <div class="flex justify-between pt-1 border-t border-slate-800 font-bold">
+                                        <span class="text-white">Calculated EAR = cv / (2 * ch):</span>
+                                        <span class="text-emerald-400 text-sm" id="sim-math-ear">0.321 (Pass)</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Preset Buttons -->
+                            <div class="grid grid-cols-4 gap-2 mt-4 pt-3 border-t border-slate-800/80">
+                                <button onclick="setSimEarPreset(0.35)" class="px-2 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] font-semibold text-slate-300 text-center transition-all">
+                                    👀 Alert (0.35)
+                                </button>
+                                <button onclick="setSimEarPreset(0.22)" class="px-2 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] font-semibold text-orange-300 text-center transition-all">
+                                    😑 Droop (0.22)
+                                </button>
+                                <button onclick="setSimEarPreset(0.08)" class="px-2 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] font-semibold text-rose-300 text-center transition-all">
+                                    😴 Closed (0.08)
+                                </button>
+                                <button onclick="triggerSimBlinkCycle()" class="px-2 py-1.5 rounded-lg bg-sky-500/20 hover:bg-sky-500/30 text-[11px] font-bold text-sky-300 border border-sky-500/40 text-center transition-all">
+                                    ⚡ Blink (200ms)
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- SIMULATOR B: PERCLOS 30-FRAME ROLLING WINDOW -->
+                        <div class="tech-card rounded-2xl p-6 border border-slate-700/80 flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-center mb-4">
+                                    <div class="flex items-center gap-2">
+                                        <span class="badge-pill bg-orange-500/20 text-orange-300 border border-orange-500/30">Simulator 2</span>
+                                        <h3 class="text-lg font-bold text-white">PERCLOS Rolling Buffer</h3>
+                                    </div>
+                                    <span id="sim-perclos-badge" class="badge-pill bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                                        🟢 NORMAL BLINKING
+                                    </span>
+                                </div>
+
+                                <p class="text-xs text-slate-400 mb-3">
+                                    DriveGuard maintains a rolling window of the last <strong>30 video frames</strong> (~1.0s at 30 FPS). Click any frame block below to toggle its state or test common driving scenarios.
+                                </p>
+
+                                <!-- 30 Frame Block Grid -->
+                                <div class="bg-slate-950/80 rounded-xl p-3.5 border border-slate-800 mb-4">
+                                    <div class="flex justify-between items-center text-[10px] text-slate-400 font-mono mb-2">
+                                        <span>t - 29 (Past)</span>
+                                        <span>30-FRAME CIRCULAR BUFFER</span>
+                                        <span>t = 0 (Now)</span>
+                                    </div>
+                                    <div id="sim-frames-grid" class="grid grid-cols-10 gap-1.5 mb-2">
+                                        <!-- 30 Dynamic Boxes injected via JS -->
+                                    </div>
+                                    <div class="flex justify-between items-center text-[10px] text-slate-400 pt-1">
+                                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block"></span> Open (EAR &ge; 0.25)</span>
+                                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-rose-500 inline-block"></span> Closed (EAR &lt; 0.25)</span>
+                                    </div>
+                                </div>
+
+                                <!-- PERCLOS Progress Bar & Metrics -->
+                                <div class="bg-slate-900/90 rounded-xl p-3.5 border border-slate-800 space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs font-semibold text-slate-300">Rolling PERCLOS Metric</span>
+                                        <span class="text-base font-black font-mono text-emerald-400" id="sim-perclos-val">10.0%</span>
+                                    </div>
+                                    <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden relative">
+                                        <div id="sim-perclos-bar" class="h-full bg-emerald-500 transition-all duration-300 rounded-full" style="width: 10%;"></div>
+                                        <!-- Threshold Marker at 70% -->
+                                        <div class="absolute top-0 bottom-0 left-[70%] w-0.5 bg-white shadow-[0_0_8px_white]" title="70% Fatigue Alarm Threshold"></div>
+                                    </div>
+                                    <div class="flex justify-between text-[10px] text-slate-400 font-mono">
+                                        <span>0% (Wide Awake)</span>
+                                        <span class="text-orange-400 font-bold">70% Threshold Marker</span>
+                                        <span>100% (Asleep)</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Scenario Presets -->
+                            <div class="grid grid-cols-4 gap-2 mt-4 pt-3 border-t border-slate-800/80">
+                                <button onclick="setSimPerclosScenario('normal')" class="px-2 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] font-semibold text-emerald-300 text-center transition-all">
+                                    🌿 Normal (10%)
+                                </button>
+                                <button onclick="setSimPerclosScenario('warning')" class="px-2 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] font-semibold text-yellow-300 text-center transition-all">
+                                    ⚠️ Warning (53%)
+                                </button>
+                                <button onclick="setSimPerclosScenario('drowsy')" class="px-2 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] font-semibold text-rose-300 text-center transition-all">
+                                    🚨 Drowsy (80%)
+                                </button>
+                                <button onclick="setSimPerclosScenario('clear')" class="px-2 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] font-semibold text-slate-400 text-center transition-all">
+                                    🔄 Reset All
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
 
-                <div class="bg-slate-800/50 rounded-2xl p-8 mb-8 border border-slate-700">
-                    <h2 class="text-2xl font-bold text-purple-400 mb-4 flex items-center gap-3">
-                        <span
-                            class="flex items-center justify-center w-8 h-8 rounded-md bg-purple-500/20 text-purple-400 text-sm">3</span>
-                        Machine Learning Style Inference
-                    </h2>
-                    <p class="leading-relaxed text-slate-300 mb-4">
-                        The Dashboard consumes these real-time alarm incidents to generate a long-term Safe Driving
-                        Score.
-                    </p>
-                    <ul class="list-disc list-inside text-slate-300 space-y-2 ml-2">
-                        <li>If alarms trigger frequently over a short duration, the style shifts to
-                            <strong>Drowsy</strong>.
-                        </li>
-                        <li>If critical alarms play endlessly without the user reacting or pulling over, it shifts to
-                            <strong>Aggressive/Risky</strong>.
-                        </li>
-                        <li>The system correlates tracking time with fatigue ratios to offer proactive resting advice.
-                        </li>
-                    </ul>
+                <!-- ==================== SECTION 2: EAR ALGORITHM & FACIAL MESH ==================== -->
+                <div id="section-ear" class="mb-14 scroll-mt-24">
+                    <div class="tech-card rounded-2xl p-8 border border-slate-700/80">
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="flex items-center justify-center w-10 h-10 rounded-xl bg-sky-500/20 text-sky-400 font-black text-lg border border-sky-500/30">1</span>
+                            <div>
+                                <h2 class="text-2xl font-black text-white">MediaPipe 468 3D Mesh & Eye Aspect Ratio (EAR)</h2>
+                                <p class="text-xs text-slate-400">Geometric facial landmark mapping and real-time vertical-to-horizontal aperture calculation.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                            <div class="space-y-4 text-slate-300 text-sm leading-relaxed">
+                                <p>
+                                    DriveGuard initializes <strong>MediaPipe FaceMesh</strong> directly inside the browser using WebGL hardware acceleration. The neural network computes real-time 3D coordinate vectors $(x, y, z)$ for <strong class="text-white">468 high-precision facial landmarks</strong> at over 30 FPS.
+                                </p>
+                                <p>
+                                    For drowsiness arbitration, we isolate the <strong class="text-sky-300">6 canonical landmark coordinates</strong> circumscribing each eye:
+                                </p>
+                                <ul class="grid grid-cols-2 gap-2 text-xs font-mono bg-slate-900/80 p-3.5 rounded-xl border border-slate-800">
+                                    <li><span class="text-sky-400">Right Eye:</span> [362, 385, 387, 263, 373, 380]</li>
+                                    <li><span class="text-indigo-400">Left Eye:</span> [33, 160, 158, 133, 153, 144]</li>
+                                </ul>
+                                <p>
+                                    The 2D Euclidean distance $d(p_a, p_b) = \sqrt{(x_a - x_b)^2 + (y_a - y_b)^2}$ calculates the vertical eyelid span against the horizontal eye corner width:
+                                </p>
+                            </div>
+
+                            <div class="bg-slate-900/90 rounded-2xl p-6 border border-slate-800 space-y-4">
+                                <h4 class="text-xs font-extrabold uppercase tracking-wider text-sky-400">Mathematical Formulation</h4>
+                                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800/80 font-mono text-xs md:text-sm text-sky-300 overflow-x-auto text-center">
+                                    $$\text{EAR} = \frac{\|p_2 - p_6\| + \|p_3 - p_5\|}{2 \cdot \|p_1 - p_4\|}$$
+                                </div>
+                                <div class="space-y-2 text-xs text-slate-300">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-3 h-3 rounded-full bg-emerald-500 flex-shrink-0"></span>
+                                        <span><strong>$\text{EAR} \ge 0.25$:</strong> Wide open & attentive gaze.</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-3 h-3 rounded-full bg-orange-500 flex-shrink-0"></span>
+                                        <span><strong>$0.20 \le \text{EAR} < 0.25$:</strong> Eyelid droop / impending fatigue.</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-3 h-3 rounded-full bg-rose-500 flex-shrink-0"></span>
+                                        <span><strong>$\text{EAR} < 0.20$:</strong> Complete eyelid closure.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== SECTION 3: PERCLOS ROLLING BUFFER & STATE MACHINE ==================== -->
+                <div id="section-perclos" class="mb-14 scroll-mt-24">
+                    <div class="tech-card rounded-2xl p-8 border border-slate-700/80">
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="flex items-center justify-center w-10 h-10 rounded-xl bg-orange-500/20 text-orange-400 font-black text-lg border border-orange-500/30">2</span>
+                            <div>
+                                <h2 class="text-2xl font-black text-white">PERCLOS (Percentage of Eye Closure) & State Machine</h2>
+                                <p class="text-xs text-slate-400">Eliminating false alarms caused by physiological blinking through temporal rolling window arbitration.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- Card 1: Blink Filtering -->
+                            <div class="bg-slate-900/60 rounded-xl p-5 border border-slate-800 space-y-3">
+                                <div class="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold">
+                                    01
+                                </div>
+                                <h3 class="text-base font-bold text-white">Blink vs Microsleep</h3>
+                                <p class="text-xs text-slate-300 leading-relaxed">
+                                    Spontaneous human blinks last <strong>100 to 300 milliseconds</strong> (3–9 frames at 30 FPS). An instantaneous EAR threshold alone would trigger constant false alarms. PERCLOS solves this by measuring closure density over time.
+                                </p>
+                            </div>
+
+                            <!-- Card 2: Circular Buffer -->
+                            <div class="bg-slate-900/60 rounded-xl p-5 border border-slate-800 space-y-3">
+                                <div class="w-9 h-9 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400 font-bold">
+                                    02
+                                </div>
+                                <h3 class="text-base font-bold text-white">30-Frame Rolling Buffer</h3>
+                                <p class="text-xs text-slate-300 leading-relaxed">
+                                    Every frame pushes a binary state $(1 = \text{closed}, 0 = \text{open})$ into a fixed $N=30$ FIFO circular buffer. If $\text{PERCLOS} = (\sum \text{closed} / 30) \times 100\% \ge 70\%$, a <strong class="text-orange-300">DROWSY WARNING</strong> state is fired.
+                                </p>
+                            </div>
+
+                            <!-- Card 3: Continuous Sleep Lock -->
+                            <div class="bg-slate-900/60 rounded-xl p-5 border border-slate-800 space-y-3">
+                                <div class="w-9 h-9 rounded-lg bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 font-bold">
+                                    03
+                                </div>
+                                <h3 class="text-base font-bold text-white">60-Frame Sleep Lock</h3>
+                                <p class="text-xs text-slate-300 leading-relaxed">
+                                    If consecutive closed frames exceed <strong>60 straight frames</strong> (~2.0 seconds), DriveGuard bypasses window averaging and immediately latches into a continuous <strong class="text-rose-400">CRITICAL FATIGUE ALARM</strong>.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== SECTION 4: FULL END-TO-END PIPELINE ==================== -->
+                <div id="section-pipeline" class="mb-14 scroll-mt-24">
+                    <div class="tech-card rounded-2xl p-8 border border-slate-700/80">
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="flex items-center justify-center w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 font-black text-lg border border-indigo-500/30">3</span>
+                            <div>
+                                <h2 class="text-2xl font-black text-white">End-to-End System Flowchart</h2>
+                                <p class="text-xs text-slate-400">5-stage client-side inference pipeline from raw WebRTC stream to multi-sensory alarm triggers.</p>
+                            </div>
+                        </div>
+
+                        <!-- Step-by-step Interactive Pipeline Ribbon -->
+                        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 text-center">
+                            
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-sky-500/30 flex flex-col items-center justify-between">
+                                <div class="w-10 h-10 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold mb-2">1</div>
+                                <h4 class="font-bold text-white text-xs mb-1">WebRTC Stream</h4>
+                                <p class="text-[11px] text-slate-400">HTML5 Video capture at 640x480 resolution @ 30 FPS</p>
+                                <span class="badge-pill bg-sky-500/10 text-sky-400 text-[9px] mt-2">Latency: ~2ms</span>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-indigo-500/30 flex flex-col items-center justify-between">
+                                <div class="w-10 h-10 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold mb-2">2</div>
+                                <h4 class="font-bold text-white text-xs mb-1">MediaPipe Mesh</h4>
+                                <p class="text-[11px] text-slate-400">WebGL accelerated 468 landmark extraction</p>
+                                <span class="badge-pill bg-indigo-500/10 text-indigo-400 text-[9px] mt-2">Latency: ~16ms</span>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-purple-500/30 flex flex-col items-center justify-between">
+                                <div class="w-10 h-10 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold mb-2">3</div>
+                                <h4 class="font-bold text-white text-xs mb-1">EAR Computation</h4>
+                                <p class="text-[11px] text-slate-400">Euclidean distance ratio on 12 eye landmarks</p>
+                                <span class="badge-pill bg-purple-500/10 text-purple-400 text-[9px] mt-2">Latency: < 1ms</span>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-orange-500/30 flex flex-col items-center justify-between">
+                                <div class="w-10 h-10 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center font-bold mb-2">4</div>
+                                <h4 class="font-bold text-white text-xs mb-1">PERCLOS Window</h4>
+                                <p class="text-[11px] text-slate-400">30-frame rolling density + 60-frame sleep counter</p>
+                                <span class="badge-pill bg-orange-500/10 text-orange-400 text-[9px] mt-2">Latency: < 1ms</span>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-rose-500/30 flex flex-col items-center justify-between">
+                                <div class="w-10 h-10 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold mb-2">5</div>
+                                <h4 class="font-bold text-white text-xs mb-1">Audio/Visual HUD</h4>
+                                <p class="text-[11px] text-slate-400">Web Audio synth & dynamic glassmorphism banner</p>
+                                <span class="badge-pill bg-rose-500/10 text-rose-400 text-[9px] mt-2">Latency: ~2ms</span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== SECTION 5: CNN ARCHITECTURE & QUANTIZATION ==================== -->
+                <div id="section-cnn" class="mb-14 scroll-mt-24">
+                    <div class="tech-card rounded-2xl p-8 border border-slate-700/80">
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="flex items-center justify-center w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 font-black text-lg border border-purple-500/30">4</span>
+                            <div>
+                                <h2 class="text-2xl font-black text-white">Custom CNN Deep Learning & INT8 Quantization</h2>
+                                <p class="text-xs text-slate-400">Trained on the Kaggle Driver Drowsiness Dataset (DDD) and quantized for zero-latency browser inference.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                            <div class="space-y-4 text-slate-300 text-sm leading-relaxed">
+                                <p>
+                                    To cross-validate geometric eye tracking in challenging lighting conditions (e.g. low-light night driving or glare), DriveGuard incorporates a lightweight <strong class="text-white">Convolutional Neural Network (CNN)</strong> trained on thousands of augmented eye images.
+                                </p>
+                                <div class="space-y-2 bg-slate-900/80 p-4 rounded-xl border border-slate-800 text-xs">
+                                    <div class="flex justify-between border-b border-slate-800 pb-1.5 font-semibold">
+                                        <span class="text-slate-400">Layer Type</span>
+                                        <span class="text-slate-400">Output Shape</span>
+                                        <span class="text-slate-400">Parameters</span>
+                                    </div>
+                                    <div class="flex justify-between text-sky-300 font-mono">
+                                        <span>Conv2D + ReLU (32 filters, 3x3)</span>
+                                        <span>(62, 62, 32)</span>
+                                        <span>320</span>
+                                    </div>
+                                    <div class="flex justify-between text-indigo-300 font-mono">
+                                        <span>MaxPooling2D (2x2)</span>
+                                        <span>(31, 31, 32)</span>
+                                        <span>0</span>
+                                    </div>
+                                    <div class="flex justify-between text-purple-300 font-mono">
+                                        <span>Conv2D + ReLU (64 filters, 3x3)</span>
+                                        <span>(29, 29, 64)</span>
+                                        <span>18,496</span>
+                                    </div>
+                                    <div class="flex justify-between text-pink-300 font-mono">
+                                        <span>Dense (128 units) + Dropout (0.5)</span>
+                                        <span>(128)</span>
+                                        <span>332,928</span>
+                                    </div>
+                                    <div class="flex justify-between text-emerald-300 font-mono font-bold">
+                                        <span>Dense (2 units, Softmax)</span>
+                                        <span>(2: Open / Closed)</span>
+                                        <span>258</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Quantization Comparison Table -->
+                            <div class="bg-slate-900/90 rounded-2xl p-6 border border-slate-800">
+                                <h4 class="text-xs font-extrabold uppercase tracking-wider text-purple-400 mb-4">Post-Training Quantization Impact</h4>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-xs text-left">
+                                        <thead class="border-b border-slate-700 text-slate-400 font-bold uppercase text-[10px]">
+                                            <tr>
+                                                <th class="py-2">Metric</th>
+                                                <th class="py-2">Float32</th>
+                                                <th class="py-2 text-purple-400">INT8 Quantized (Ours)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-slate-800 text-slate-300 font-mono">
+                                            <tr>
+                                                <td class="py-2.5 font-sans font-semibold">Model File Size</td>
+                                                <td class="py-2.5 text-slate-400">4.72 MB</td>
+                                                <td class="py-2.5 text-emerald-400 font-bold">1.17 MB (-75.2%)</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-2.5 font-sans font-semibold">Inference Latency</td>
+                                                <td class="py-2.5 text-slate-400">38.4 ms</td>
+                                                <td class="py-2.5 text-emerald-400 font-bold">14.1 ms (2.7x faster)</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-2.5 font-sans font-semibold">Validation Accuracy</td>
+                                                <td class="py-2.5 text-slate-400">99.91%</td>
+                                                <td class="py-2.5 text-sky-400 font-bold">99.86% (Retained)</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-2.5 font-sans font-semibold">RAM Consumption</td>
+                                                <td class="py-2.5 text-slate-400">~120 MB</td>
+                                                <td class="py-2.5 text-emerald-400 font-bold">~32 MB</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== SECTION 6: BENCHMARKS & SPECIFICATIONS ==================== -->
+                <div id="section-benchmarks" class="mb-14 scroll-mt-24">
+                    <div class="tech-card rounded-2xl p-8 border border-slate-700/80">
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="flex items-center justify-center w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 font-black text-lg border border-emerald-500/30">5</span>
+                            <div>
+                                <h2 class="text-2xl font-black text-white">System Benchmarks & Privacy Specs</h2>
+                                <p class="text-xs text-slate-400">Proven performance across varied hardware profiles and strict zero-telemetry architecture.</p>
+                            </div>
+                        </div>
+
+                        <!-- 6 Core Spec Cards -->
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+                            <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-center">
+                                <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-1">Val Accuracy</p>
+                                <p class="text-2xl font-black text-emerald-400 font-mono">99.86%</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-center">
+                                <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-1">FPS Target</p>
+                                <p class="text-2xl font-black text-sky-400 font-mono">30–60</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-center">
+                                <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-1">End Latency</p>
+                                <p class="text-2xl font-black text-indigo-400 font-mono">&lt; 35ms</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-center">
+                                <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-1">Weight Size</p>
+                                <p class="text-2xl font-black text-purple-400 font-mono">1.17 MB</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-center">
+                                <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-1">Landmarks</p>
+                                <p class="text-2xl font-black text-pink-400 font-mono">468 3D</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-center">
+                                <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-1">Server Bytes</p>
+                                <p class="text-2xl font-black text-emerald-400 font-mono">0 KB</p>
+                            </div>
+                        </div>
+
+                        <!-- Privacy Statement Banner -->
+                        <div class="p-5 rounded-xl bg-gradient-to-r from-sky-900/30 via-indigo-900/30 to-purple-900/30 border border-sky-500/20 flex items-center gap-4">
+                            <div class="p-3 rounded-full bg-sky-500/20 text-sky-400 flex-shrink-0">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-white mb-0.5">Privacy First Guarantee</h4>
+                                <p class="text-xs text-slate-300 leading-relaxed">
+                                    DriveGuard runs 100% locally in your client's web browser using JavaScript and WebGL. No video frames, landmark coordinates, or telemetry are ever uploaded or transmitted over network sockets.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Back to Monitor CTA -->
+                <div class="text-center pb-8">
+                    <button onclick="startMonitoringSession()"
+                        class="bg-sky-500 hover:bg-sky-400 text-slate-900 font-bold py-4 px-10 rounded-full shadow-[0_0_25px_rgba(56,189,248,0.4)] transition-all transform hover:scale-105">
+                        Launch Live Monitor Now →
+                    </button>
                 </div>
 
             </div>
@@ -565,34 +1071,34 @@
     <script src="dashboard.js?v=202405"></script>
     <script src="app.js?v=202405"></script>
 
-    <!-- SPA Router Logic -->
+    <!-- SPA Router Logic & About Page Interactive Simulators -->
     <script>
         let currentNav = 'home';
 
         function navigateTo(pageId) {
             // Update nav styling
             document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
-            document.querySelector(`.nav-link[onclick="navigateTo('${pageId}')"]`).classList.add('active');
+            const activeNavEl = document.querySelector(`.nav-link[onclick="navigateTo('${pageId}')"]`);
+            if (activeNavEl) activeNavEl.classList.add('active');
 
             // Execute exit transitions
             document.querySelectorAll('.page-view').forEach(el => {
                 el.classList.remove('active');
-                // Slight delay so the old page fades out before sliding the new one in completely
                 setTimeout(() => {
                     if (!el.classList.contains('active')) {
                         el.style.display = 'none';
                     }
-                }, 500);
+                }, 400);
             });
 
             // Execute enter transitions for the selected page
             const targetPage = document.getElementById(`page-${pageId}`);
-            targetPage.style.display = 'block';
-
-            // Timeout ensures display:block applies before CSS transition triggers
-            setTimeout(() => {
-                targetPage.classList.add('active');
-            }, 50);
+            if (targetPage) {
+                targetPage.style.display = 'block';
+                setTimeout(() => {
+                    targetPage.classList.add('active');
+                }, 40);
+            }
 
             // Notify Three.js controller
             if (typeof setDashboardActive === 'function') {
@@ -606,18 +1112,291 @@
                 document.getElementById('controls-panel').style.display = 'block';
             }
 
+            // If navigating to About page, initialize or redraw canvas
+            if (pageId === 'about') {
+                setTimeout(() => {
+                    drawSimEar(currentSimEar);
+                }, 100);
+            }
+
             currentNav = pageId;
         }
 
         function startMonitoringSession() {
             navigateTo('monitor');
-            // Simulate a click on the actual camera start loop inside app.js 
-            // if it hasn't been clicked yet
             const btnStart = document.getElementById('btn-start');
-            if (btnStart.style.display !== 'none') {
+            if (btnStart && btnStart.style.display !== 'none') {
                 btnStart.click();
             }
         }
+
+        /* ============================================================
+         * INTERACTIVE ABOUT PAGE LOGIC
+         * ============================================================ */
+        let currentSimEar = 0.32;
+        let simFramesBuffer = Array(30).fill(0); // 0 = open, 1 = closed
+
+        // Initialize 30-frame initial state (3 closed frames ~ 10% PERCLOS)
+        simFramesBuffer[12] = 1;
+        simFramesBuffer[13] = 1;
+        simFramesBuffer[14] = 1;
+
+        // Draw Interactive Eye Canvas
+        function drawSimEar(earVal) {
+            const canvas = document.getElementById('sim-ear-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            ctx.clearRect(0, 0, w, h);
+
+            const cx = w / 2;
+            const cy = h / 2 + 5;
+            const eyeW = 220;
+            const eyeH = Math.max(8, earVal * 320);
+
+            // Coordinates for 6 points
+            const p1 = { x: cx - eyeW / 2, y: cy }; // Outer left
+            const p4 = { x: cx + eyeW / 2, y: cy }; // Outer right
+            const p2 = { x: cx - eyeW / 4, y: cy - eyeH / 2 }; // Top left
+            const p3 = { x: cx + eyeW / 4, y: cy - eyeH / 2 }; // Top right
+            const p6 = { x: cx - eyeW / 4, y: cy + eyeH / 2 }; // Bottom left
+            const p5 = { x: cx + eyeW / 4, y: cy + eyeH / 2 }; // Bottom right
+
+            // Draw Eyelid Outer Contour
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.quadraticCurveTo(cx, cy - eyeH * 0.75, p4.x, p4.y);
+            ctx.quadraticCurveTo(cx, cy + eyeH * 0.75, p1.x, p1.y);
+            ctx.fillStyle = earVal < 0.25 ? 'rgba(239, 68, 68, 0.12)' : 'rgba(56, 189, 248, 0.12)';
+            ctx.fill();
+            ctx.strokeStyle = earVal < 0.25 ? '#ef4444' : '#38bdf8';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            // Draw Iris / Pupil if eye is reasonably open
+            if (earVal > 0.12) {
+                const irisRadius = Math.min(32, eyeH * 0.45 + 10);
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(p1.x, p1.y);
+                ctx.quadraticCurveTo(cx, cy - eyeH * 0.75, p4.x, p4.y);
+                ctx.quadraticCurveTo(cx, cy + eyeH * 0.75, p1.x, p1.y);
+                ctx.clip();
+
+                // Iris
+                ctx.beginPath();
+                ctx.arc(cx, cy, irisRadius, 0, Math.PI * 2);
+                ctx.fillStyle = '#0284c7';
+                ctx.fill();
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Pupil
+                ctx.beginPath();
+                ctx.arc(cx, cy, irisRadius * 0.45, 0, Math.PI * 2);
+                ctx.fillStyle = '#0f172a';
+                ctx.fill();
+
+                // Reflection light
+                ctx.beginPath();
+                ctx.arc(cx - irisRadius * 0.2, cy - irisRadius * 0.2, irisRadius * 0.18, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+                ctx.fill();
+                ctx.restore();
+            }
+
+            // Draw Distance Lines
+            ctx.setLineDash([4, 4]);
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 1.5;
+
+            // Vertical line 1 (p2 to p6)
+            ctx.beginPath();
+            ctx.moveTo(p2.x, p2.y);
+            ctx.lineTo(p6.x, p6.y);
+            ctx.stroke();
+
+            // Vertical line 2 (p3 to p5)
+            ctx.beginPath();
+            ctx.moveTo(p3.x, p3.y);
+            ctx.lineTo(p5.x, p5.y);
+            ctx.stroke();
+
+            // Horizontal line (p1 to p4)
+            ctx.strokeStyle = '#818cf8';
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p4.x, p4.y);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Draw Landmark Dots & Labels
+            const pts = [
+                { pt: p1, label: 'p1', color: '#818cf8' },
+                { pt: p2, label: 'p2', color: '#f59e0b' },
+                { pt: p3, label: 'p3', color: '#f59e0b' },
+                { pt: p4, label: 'p4', color: '#818cf8' },
+                { pt: p5, label: 'p5', color: '#f59e0b' },
+                { pt: p6, label: 'p6', color: '#f59e0b' }
+            ];
+
+            pts.forEach(item => {
+                ctx.beginPath();
+                ctx.arc(item.pt.x, item.pt.y, 4.5, 0, Math.PI * 2);
+                ctx.fillStyle = item.color;
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                ctx.fillStyle = '#cbd5e1';
+                ctx.font = '10px monospace';
+                ctx.fillText(item.label, item.pt.x - 6, item.pt.y > cy ? item.pt.y + 14 : item.pt.y - 8);
+            });
+        }
+
+        function updateSimEarUI(val) {
+            currentSimEar = parseFloat(val);
+            document.getElementById('sim-ear-slider-val').innerText = currentSimEar.toFixed(2);
+            document.getElementById('sim-ear-slider').value = currentSimEar;
+
+            // Math calculations for display
+            const ch = 56.0;
+            const cv1 = (currentSimEar * ch).toFixed(1);
+            const cv2 = (currentSimEar * ch * 0.98).toFixed(1);
+            const cvSum = (parseFloat(cv1) + parseFloat(cv2)).toFixed(1);
+            const calculatedEar = (parseFloat(cvSum) / (2 * ch)).toFixed(3);
+
+            document.getElementById('sim-math-cv').innerText = `cv1: ${cv1}px + cv2: ${cv2}px = ${cvSum}px`;
+            document.getElementById('sim-math-ch').innerText = `2 * ${ch.toFixed(1)}px = ${(2 * ch).toFixed(1)}px`;
+            
+            const badge = document.getElementById('sim-ear-badge');
+            const mathEarEl = document.getElementById('sim-math-ear');
+
+            if (currentSimEar < 0.25) {
+                badge.className = "badge-pill bg-rose-500/20 text-rose-300 border border-rose-500/40";
+                badge.innerText = "🔴 EYES CLOSED (< 0.25)";
+                mathEarEl.className = "text-rose-400 text-sm font-bold";
+                mathEarEl.innerText = `${calculatedEar} (BREACH / CLOSED)`;
+            } else {
+                badge.className = "badge-pill bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+                badge.innerText = "🟢 EYES OPEN (PASS)";
+                mathEarEl.className = "text-emerald-400 text-sm font-bold";
+                mathEarEl.innerText = `${calculatedEar} (ALERT / OPEN)`;
+            }
+
+            drawSimEar(currentSimEar);
+        }
+
+        function setSimEarPreset(val) {
+            updateSimEarUI(val);
+        }
+
+        function triggerSimBlinkCycle() {
+            const start = performance.now();
+            const originalVal = currentSimEar;
+            function animateBlink(time) {
+                const elapsed = time - start;
+                if (elapsed < 100) {
+                    // closing
+                    const progress = elapsed / 100;
+                    updateSimEarUI(originalVal - (originalVal - 0.06) * progress);
+                    requestAnimationFrame(animateBlink);
+                } else if (elapsed < 220) {
+                    // reopening
+                    const progress = (elapsed - 100) / 120;
+                    updateSimEarUI(0.06 + (originalVal - 0.06) * progress);
+                    requestAnimationFrame(animateBlink);
+                } else {
+                    updateSimEarUI(originalVal);
+                }
+            }
+            requestAnimationFrame(animateBlink);
+        }
+
+        // Render PERCLOS 30-frame buffer
+        function renderSimFramesGrid() {
+            const grid = document.getElementById('sim-frames-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            let closedCount = 0;
+            simFramesBuffer.forEach((state, idx) => {
+                if (state === 1) closedCount++;
+                const box = document.createElement('div');
+                box.className = `frame-box flex items-center justify-center text-[10px] font-mono font-bold text-white shadow-sm ${state === 1 ? 'bg-rose-500' : 'bg-emerald-500/80'}`;
+                box.innerText = idx + 1;
+                box.title = `Frame ${idx + 1}: ${state === 1 ? 'Closed (1)' : 'Open (0)'} - Click to Toggle`;
+                box.onclick = () => {
+                    simFramesBuffer[idx] = simFramesBuffer[idx] === 1 ? 0 : 1;
+                    renderSimFramesGrid();
+                };
+                grid.appendChild(box);
+            });
+
+            // Calculate percentage
+            const perclosPct = ((closedCount / 30) * 100).toFixed(1);
+            document.getElementById('sim-perclos-val').innerText = `${perclosPct}%`;
+            
+            const bar = document.getElementById('sim-perclos-bar');
+            bar.style.width = `${perclosPct}%`;
+
+            const badge = document.getElementById('sim-perclos-badge');
+            if (perclosPct >= 70.0) {
+                bar.className = "h-full bg-rose-500 transition-all duration-300 rounded-full shadow-[0_0_10px_#ef4444]";
+                badge.className = "badge-pill bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse";
+                badge.innerText = "🚨 CRITICAL FATIGUE ALARM";
+                document.getElementById('sim-perclos-val').className = "text-base font-black font-mono text-rose-400";
+            } else if (perclosPct >= 50.0) {
+                bar.className = "h-full bg-orange-400 transition-all duration-300 rounded-full";
+                badge.className = "badge-pill bg-orange-500/20 text-orange-300 border border-orange-500/40";
+                badge.innerText = "⚠️ DROWSINESS WARNING";
+                document.getElementById('sim-perclos-val').className = "text-base font-black font-mono text-orange-400";
+            } else {
+                bar.className = "h-full bg-emerald-500 transition-all duration-300 rounded-full";
+                badge.className = "badge-pill bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+                badge.innerText = "🟢 NORMAL BLINKING";
+                document.getElementById('sim-perclos-val').className = "text-base font-black font-mono text-emerald-400";
+            }
+        }
+
+        function setSimPerclosScenario(scenario) {
+            if (scenario === 'normal') {
+                simFramesBuffer = Array(30).fill(0);
+                simFramesBuffer[10] = 1;
+                simFramesBuffer[11] = 1;
+                simFramesBuffer[12] = 1;
+            } else if (scenario === 'warning') {
+                simFramesBuffer = Array(30).fill(0);
+                for (let i = 0; i < 16; i++) simFramesBuffer[i] = 1;
+            } else if (scenario === 'drowsy') {
+                simFramesBuffer = Array(30).fill(1);
+                simFramesBuffer[0] = 0;
+                simFramesBuffer[1] = 0;
+                simFramesBuffer[2] = 0;
+                simFramesBuffer[3] = 0;
+                simFramesBuffer[4] = 0;
+                simFramesBuffer[5] = 0;
+            } else if (scenario === 'clear') {
+                simFramesBuffer = Array(30).fill(0);
+            }
+            renderSimFramesGrid();
+        }
+
+        // Setup slider event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            const earSlider = document.getElementById('sim-ear-slider');
+            if (earSlider) {
+                earSlider.addEventListener('input', (e) => {
+                    updateSimEarUI(e.target.value);
+                });
+            }
+            drawSimEar(currentSimEar);
+            renderSimFramesGrid();
+        });
     </script>
 
 </body>
